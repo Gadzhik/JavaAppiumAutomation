@@ -1,16 +1,29 @@
 import org.junit.Test;
 
-public class MainTest {
+public class MainTest
+{
+    // Переменные написанные вне функции - являются полями класса. Они видны в каждой функции класса. Мы пожем обратиться к полю класса через this.a
+    int a = 3;
+    int b = 12;
+
     @Test
     public void myFirstTest()
     {
-        int a = 11;
-        int b = 20;
+        int a = this.multiplay(3);
+        System.out.println(a);
 
-        if(a > b) {
-            System.out.println("This will never happen");
-        } else {
-            System.out.println("This is what will happen");
-        }
+        int b = this.multiplay(10, 17);
+        System.out.println(b);
+    }
+
+    // Добавляем функцию для вывода текста
+    public int multiplay(int number)
+    {
+        return number * 2;
+    }
+
+    public int multiplay(int number, int multiplier)
+    {
+        return number * multiplier;
     }
 }
