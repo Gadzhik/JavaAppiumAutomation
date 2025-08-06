@@ -43,6 +43,8 @@ public class FirstTest
     {
         WebElement element = driver.findElementByXPath("//*[contains(@text, 'Search Wikipedia')]");
         element.click();
-        // System.out.println("First test run");
+
+        WebElement element_to_enter_search_line = driver.findElementByXPath("//*[contains(@text, 'Search…')]");
+        element_to_enter_search_line.sendKeys("Tom and Jerry");
     }
 }
