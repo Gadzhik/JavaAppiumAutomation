@@ -55,7 +55,12 @@ public class FirstTest
                 "Cannot find search input"
         );
 
-        element_to_enter_search_line.sendKeys("Tom and Jerry");
+        element_to_enter_search_line.sendKeys("Java");
+        waitForElementPresentByXpath(
+                "//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']",
+                "Cannot find 'Object-oriented programming language' topic searching by 'Java'",
+                15
+        );
     }
 
     // отдельный метод для Wait, при помощи которого будем искать элемент по Xpath и ожидать его появления
