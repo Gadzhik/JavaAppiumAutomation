@@ -3,8 +3,13 @@ import io.appium.java_client.android.AndroidDriver;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.net.URL;
 
@@ -44,7 +49,27 @@ public class FirstTest
         WebElement element = driver.findElementByXPath("//*[contains(@text, 'Search Wikipedia')]");
         element.click();
 
-        WebElement element_to_enter_search_line = driver.findElementByXPath("//*[contains(@text, 'Search…')]");
+        WebElement element_to_enter_search_line = waitForElementPresentByXpath(
+                "//*[contains(@text, 'Search…')]",
+                // добавляем error_message, он покажется, если не получится найти xpath
+                "Cannot find search input",
+                5
+        );
+
         element_to_enter_search_line.sendKeys("Tom and Jerry");
     }
+
+    // отдельный метод для Wait, при помощи которого будем искать элемент по Xpath и ожидать его появления
+    private WebElement waitForElementPresentByXpath(String xpath, String error_message, long timeoutInSeconds) {
+        WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
+        // передаем сообщение об ошибке и добавляем +\n для того, чтобы оно каждый раз начиналось с новой строки
+        wait.withMessage(error_message + "\n");
+        // передаем параметр, который будем ожидать
+        By by = By.xpath(xpath);
+        // возвращаем возникающий элемент - by
+        return wait.until(
+                ExpectedConditions.presenceOfElementLocated(by)
+        );
+    }
+
 }
