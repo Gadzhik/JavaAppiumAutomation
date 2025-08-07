@@ -52,15 +52,15 @@ public class FirstTest
         WebElement element_to_enter_search_line = waitForElementPresentByXpath(
                 "//*[contains(@text, 'Search…')]",
                 // добавляем error_message, он покажется, если не получится найти xpath
-                "Cannot find search input",
-                5
+                "Cannot find search input"
         );
 
         element_to_enter_search_line.sendKeys("Tom and Jerry");
     }
 
     // отдельный метод для Wait, при помощи которого будем искать элемент по Xpath и ожидать его появления
-    private WebElement waitForElementPresentByXpath(String xpath, String error_message, long timeoutInSeconds) {
+    private WebElement waitForElementPresentByXpath(String xpath, String error_message, long timeoutInSeconds)
+    {
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
         // передаем сообщение об ошибке и добавляем +\n для того, чтобы оно каждый раз начиналось с новой строки
         wait.withMessage(error_message + "\n");
@@ -70,6 +70,12 @@ public class FirstTest
         return wait.until(
                 ExpectedConditions.presenceOfElementLocated(by)
         );
+    }
+
+        // добавляем перегрузку метода
+    private WebElement waitForElementPresentByXpath(String xpath, String error_message)
+    {
+        return waitForElementPresentByXpath(xpath, error_message, 5);
     }
 
 }
