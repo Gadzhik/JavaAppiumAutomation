@@ -41,24 +41,47 @@ public class FirstTest
         driver.quit();
     }
     // firstTest - тут будет распологаться код теста
+//    @Test
+//    public void firstTest()
+//    {
+//        waitForElementByXpathAndClick(
+//                "//*[contains(@text, 'Search Wikipedia')]",
+//                "Cannot find 'Search wikipedia' input",
+//                5
+//        );
+//        waitForElementByXpathAndSendKey(
+//                "//*[contains(@text, 'Search…')]",
+//                "Java",
+//                "Cannot find search input",
+//                5
+//        );
+//        waitForElementPresentByXpath(
+//                "//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']",
+//                "Cannot find 'Object-oriented programming language' topic searching by 'Java'",
+//                15
+//        );
+//    }
+
     @Test
-    public void firstTest()
+    public void testCancelSearch()
     {
-        waitForElementByXpathAndClick(
-                "//*[contains(@text, 'Search Wikipedia')]",
-                "Cannot find Search wikipedia input",
+        waitForElementByIdAndClick(
+            "org.wikipedia:id/search_container",
+                "Cannot find 'Search wikipedia' input",
                 5
         );
-        waitForElementByXpathAndSendKey(
-                "//*[contains(@text, 'Search…')]",
-                "Java",
-                "Cannot find search input",
+
+        // добавляем тоже самое для кнопи X - отмена поиска
+        waitForElementByIdAndClick(
+                "org.wikipedia:id/search_close_btn",
+                "Cannot find X to cancel search",
                 5
         );
-        waitForElementPresentByXpath(
-                "//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']",
-                "Cannot find 'Object-oriented programming language' topic searching by 'Java'",
-                15
+
+        waitForElementNotPresent(
+                "org.wikipedia:id/search_close_btn",
+                "X is still present on the page",
+                5
         );
     }
 
@@ -94,6 +117,35 @@ public class FirstTest
         WebElement element = waitForElementPresentByXpath(xpath, error_message, timeoutInSeconds);
         element.sendKeys(value);
         return element;
+    }
+
+    // метод для testCancelSearch
+    private WebElement waitForElementPresentById(String id, String error_message, long timeoutInSeconds)
+    {
+        WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
+        wait.withMessage(error_message + "\n");
+        By by = By.id(id);
+        return wait.until(
+                ExpectedConditions.presenceOfElementLocated(by)
+        );
+    }
+
+    // метод для testCancelSearch
+    private WebElement waitForElementByIdAndClick(String id, String error_message, long timeoutInSeconds)
+    {
+        WebElement element = waitForElementPresentById(id, error_message, timeoutInSeconds);
+        element.click();
+        return element;
+    }
+
+    // проверяем, что элемент Х не присутствует на странице
+    private boolean waitForElementNotPresent(String id, String error_message, long timeoutInSeconds)
+    {
+        WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
+        wait.withMessage(error_message + "\n");
+        By by = By.id(id);
+        return wait.until(ExpectedConditions.invisibilityOfElementLocated(by)
+        );
     }
 
 }
