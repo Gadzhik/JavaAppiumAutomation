@@ -209,25 +209,28 @@ public class FirstTest {
 
         waitForElementAndSendKeys(
                 By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
-                "Java",
+                "Appium",
                 "Cannot find search input",
                 5
         );
 
         waitForElementAndClick(
-                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_title']//*[@text='Java (programming language)']"),
-                "Cannot find 'Search wikipedia for ElementAndClick' input",
+                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_title'][@text='Appium']"),
+                "Cannot find 'Appium article for ElementAndClick' input",
                 15
         );
 
         waitForElementPresent(
-                By.id("org.wikipedia:id/view_page_title_text"),
+                By.xpath("//*[@content-desc='Appium']"),
                 "Cannot find article title",
                 15
         );
 
-        // добавляем метод для свайпа
-        swipeUp(2000);
+        swipeUpToFindElement(
+                By.xpath("//*[@content-desc='View article in browser']"),
+                "Cannot find the end of the article",
+                10
+        );
 
     }
 
@@ -266,52 +269,7 @@ public class FirstTest {
         );
     }
 
-//    Ex3: Тест: отмена поиска
-//
-//    Написать тест, который:
-//    Ищет какое-то слово
-//    Убеждается, что найдено несколько статей
-//    Отменяет поиск
-//    Убеждается, что результат поиска пропал
-
-    // Домашка Ex3: Тест: отмена поиска
-    @Test
-    public void testSearchFieldCancel() {
-        waitForElementAndClickSkip(
-                By.xpath("//*[contains(@text, 'Skip')]"),
-                "Cannot find 'Skip' button",
-                5
-        );
-
-        waitForElementAndClick(
-                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
-                "Cannot find 'Search wikipedia' input",
-                5
-        );
-
-        waitForElementAndSendKeys(
-                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
-                "Python",
-                "Cannot find search input",
-                5
-        );
-
-        // TODO: Убеждается, что найдено несколько статей
-        WebElement element = waitForElementPresent(By.id("org.wikipedia:id/view_page_title_text"),
-                "Cannot find article title",
-                15
-        );
-
-        // TODO: Отменяет поиск
-        waitForElementAndClear(
-                By.id("org.wikipedia:id/search_src_text"),
-                "Cannot find search field",
-                5
-        );
-    }
-
-
-    // отдельный метод для Wait, при помощи которого будем искать элемент по Xpath и ожидать его появления
+   // отдельный метод для Wait, при помощи которого будем искать элемент по Xpath и ожидать его появления
     private WebElement waitForElementPresent(By by, String error_message, long timeoutInSeconds) {
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
 
@@ -383,6 +341,13 @@ public class FirstTest {
         action.press(x, start_y).waitAction(timeOfSwipe).moveTo(x, end_y).release().perform();
     }
 
+    // Module 4. Lesson 02. Swipe till element found - swipeQuick, counter
+    // метод для быстрого свайпа
+    protected void swipeUpQuick()
+    {
+        swipeUp(200);
+    }
+
     // домашка по 3му модулю - Ex2: Создание метода
     private WebElement assertElementHasText(By by, String error_message, String text, long timeoutInSeconds) {
         WebElement element = waitForElementPresent(by, error_message, timeoutInSeconds);
@@ -390,4 +355,25 @@ public class FirstTest {
         return element;
     }
 
+    // Метод для проверки, что нужного элем нет на странице, прокручивать страницу вниз и сделать проверку еще раз и так до тех пор пока он не достигнет футера
+    // max_swipes - задаем максимальное количество необходимых свайпов, при привышении этого количества, цикл будет останавливаться
+    protected void swipeUpToFindElement(By by, String error_message, int max_swipes)
+    {
+        // функция для поиска всех элементов на странице
+        // при вызове метода запускается цикл, кот постоянно ищет элементы, кот передаются этому методу в переменную by. Если он их находит, то цикл завершается. Если не находит, то постоянно свайпает вверх
+
+        // already_swiped - количество реальных свайпов
+        int already_swiped = 0;
+        while (driver.findElements(by).size() == 0)
+        {
+            if (already_swiped > max_swipes)
+            {
+                waitForElementPresent(by, "Cannot find element by swiping up. \n" + error_message, 0);
+                return;
+            }
+
+            swipeUpQuick();
+            ++already_swiped;
+        }
+    }
 }
