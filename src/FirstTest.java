@@ -13,16 +13,15 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.net.URL;
+import java.util.List;
 
-public class FirstTest
-{
+public class FirstTest {
     private AppiumDriver driver;
     // Чтобы тест работал нам нужно добавить 3 метода. Это - setUp, tearDown, firstTest
 
     // В методе Setup - мы будем устанавливать все необходимые параметры для того чтобы запустить Аппиум драйвер и поднять наше приложение на устройстве.
     @Before
-    public void setUp() throws Exception
-    {
+    public void setUp() throws Exception {
         // задаем capabilities, которые необходимы Аппиуму для работы
         DesiredCapabilities capabilities = new DesiredCapabilities();
 
@@ -37,16 +36,16 @@ public class FirstTest
         // включаем андроид-драйвер и передаем ему все capabilities и путь из которого он должен запускаться
         driver = new AndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
     }
+
     // tearDown - драйвер будет выключаться
     @After
-    public void tearDown()
-    {
+    public void tearDown() {
         driver.quit();
     }
+
     // firstTest - тут будет распологаться код теста
     @Test
-    public void firstTest()
-    {
+    public void firstTest() {
         waitForElementAndClick(
                 By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
                 "Cannot find 'Search wikipedia' input",
@@ -65,9 +64,12 @@ public class FirstTest
         );
     }
 
+    // Ex4*: Тест: проверка слов в поиске
+    //  Написать тест, который делает поиск по какому-то слову. Например, JAVA. Затем убеждается, что в каждом результате поиска есть это слово.
+    //  Внимание, прокручивать результаты выдачи поиска не надо. Это мы научимся делать на следующих занятиях. Пока надо работать только с теми результатами поиска, который видны сразу, без прокрутки.
+
     @Test
-    public void testCancelSearch()
-    {
+    public void testSearchWordsInArticles() {
         waitForElementAndClickSkip(
                 By.xpath("//*[contains(@text, 'Skip')]"),
                 "Cannot find 'Skip' button",
@@ -75,7 +77,41 @@ public class FirstTest
         );
 
         waitForElementAndClick(
-            By.id("org.wikipedia:id/search_container"),
+                By.id("org.wikipedia:id/search_container"),
+                "Cannot find 'Search Wikipedia'",
+                5
+        );
+
+        String search_word = "Python";
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+                search_word,
+                "Cannot find search_text_input element",
+                15
+        );
+
+
+        List<WebElement> search_Results = driver.findElementsById("org.wikipedia:id/page_list_item_title");
+
+        Assert.assertFalse("There is no results in the search", search_Results.isEmpty());
+
+        for (WebElement result : search_Results) {
+            String resultText = result.getText();
+            Assert.assertTrue("Result does not contain the search word: " + resultText,
+                    resultText.toLowerCase().contains(search_word.toLowerCase()));
+        }
+    }
+
+    @Test
+    public void testCancelSearch() {
+        waitForElementAndClickSkip(
+                By.xpath("//*[contains(@text, 'Skip')]"),
+                "Cannot find 'Skip' button",
+                5
+        );
+
+        waitForElementAndClick(
+                By.id("org.wikipedia:id/search_container"),
                 "Cannot find 'Search wikipedia' input",
                 5
         );
@@ -118,8 +154,7 @@ public class FirstTest
 
     // сравниваем название статьи с ожидаемым и отдаем ошибку, если оно не совпадает
     @Test
-    public void testCompareArticleTitle()
-    {
+    public void testCompareArticleTitle() {
         waitForElementAndClick(
                 By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
                 "Cannot find 'Search wikipedia' input",
@@ -142,7 +177,7 @@ public class FirstTest
 
         // ждем пока статья подгрузится и записываем заголовок статьи в переменную
         WebElement title_element = waitForElementPresent(
-            By.id("org.wikipedia:id/view_page_title_text"),
+                By.id("org.wikipedia:id/view_page_title_text"),
                 "Cannot find article title",
                 15
         );
@@ -159,8 +194,7 @@ public class FirstTest
 
     // добавляем тест для проверки свайпа
     @Test
-    public void testSwipeArticle()
-    {
+    public void testSwipeArticle() {
         waitForElementAndClickSkip(
                 By.xpath("//*[contains(@text, 'Skip')]"),
                 "Cannot find 'Skip' button",
@@ -198,8 +232,7 @@ public class FirstTest
     }
 
     @Test
-    public void testHasElement()
-    {
+    public void testHasElement() {
         WebElement skipButton = driver.findElementByXPath("//*[contains(@text, 'SKIP')]");
         skipButton.click();
 
@@ -218,8 +251,7 @@ public class FirstTest
 
     // домашка по 3му модулю - Ex2: Создание метода
     @Test
-    public void testSearchFieldText()
-    {
+    public void testSearchFieldText() {
         waitForElementAndClickSkip(
                 By.xpath("//*[contains(@text, 'Skip')]"),
                 "Cannot find 'Skip' button",
@@ -244,8 +276,7 @@ public class FirstTest
 
     // Домашка Ex3: Тест: отмена поиска
     @Test
-    public void testSearchFieldCancel()
-    {
+    public void testSearchFieldCancel() {
         waitForElementAndClickSkip(
                 By.xpath("//*[contains(@text, 'Skip')]"),
                 "Cannot find 'Skip' button",
@@ -281,8 +312,7 @@ public class FirstTest
 
 
     // отдельный метод для Wait, при помощи которого будем искать элемент по Xpath и ожидать его появления
-    private WebElement waitForElementPresent(By by, String error_message, long timeoutInSeconds)
-    {
+    private WebElement waitForElementPresent(By by, String error_message, long timeoutInSeconds) {
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
 
         // передаем сообщение об ошибке и добавляем +\n для того, чтобы оно каждый раз начиналось с новой строки
@@ -295,36 +325,31 @@ public class FirstTest
     }
 
     // добавляем перегрузку метода
-    private WebElement waitForElementPresent(By by, String error_message)
-    {
+    private WebElement waitForElementPresent(By by, String error_message) {
         return waitForElementPresent(by, error_message, 5);
     }
 
     // for Skip button
-    private WebElement waitForElementAndClickSkip(By by, String error_message, long timeoutInSeconds)
-    {
+    private WebElement waitForElementAndClickSkip(By by, String error_message, long timeoutInSeconds) {
         WebElement element = waitForElementPresent(by, error_message, timeoutInSeconds);
         element.click();
         return element;
     }
 
-    private WebElement waitForElementAndClick(By by, String error_message, long timeoutInSeconds)
-    {
+    private WebElement waitForElementAndClick(By by, String error_message, long timeoutInSeconds) {
         WebElement element = waitForElementPresent(by, error_message, timeoutInSeconds);
         element.click();
         return element;
     }
 
-    private WebElement waitForElementAndSendKeys(By by, String value, String error_message, long timeoutInSeconds)
-    {
+    private WebElement waitForElementAndSendKeys(By by, String value, String error_message, long timeoutInSeconds) {
         WebElement element = waitForElementPresent(by, error_message, timeoutInSeconds);
         element.sendKeys(value);
         return element;
     }
 
     // проверяем, что элемент Х не присутствует на странице
-    private boolean waitForElementNotPresent(By by, String error_message, long timeoutInSeconds)
-    {
+    private boolean waitForElementNotPresent(By by, String error_message, long timeoutInSeconds) {
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
         wait.withMessage(error_message + "\n");
         return wait.until(ExpectedConditions.invisibilityOfElementLocated(by)
@@ -332,16 +357,14 @@ public class FirstTest
     }
 
     // добавляем метод для очистки поля
-    private WebElement waitForElementAndClear(By by, String error_message, long timeoutInSeconds)
-    {
+    private WebElement waitForElementAndClear(By by, String error_message, long timeoutInSeconds) {
         WebElement element = waitForElementPresent(by, error_message, timeoutInSeconds);
         element.clear();
         return element;
     }
 
     // пишем метод для свайпа снизу экрана вверх
-    protected void swipeUp(int timeOfSwipe)
-    {
+    protected void swipeUp(int timeOfSwipe) {
         TouchAction action = new TouchAction(driver);
 
         // определяем размер экрана и получаем параметры девайса
@@ -361,8 +384,7 @@ public class FirstTest
     }
 
     // домашка по 3му модулю - Ex2: Создание метода
-    private WebElement assertElementHasText(By by, String error_message, String text, long timeoutInSeconds)
-    {
+    private WebElement assertElementHasText(By by, String error_message, String text, long timeoutInSeconds) {
         WebElement element = waitForElementPresent(by, error_message, timeoutInSeconds);
         element.getAttribute("text");
         return element;
