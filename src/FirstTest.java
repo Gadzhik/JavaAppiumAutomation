@@ -68,6 +68,12 @@ public class FirstTest
     @Test
     public void testCancelSearch()
     {
+        waitForElementAndClickSkip(
+                By.xpath("//*[contains(@text, 'Skip')]"),
+                "Cannot find 'Skip' button",
+                5
+        );
+
         waitForElementAndClick(
             By.id("org.wikipedia:id/search_container"),
                 "Cannot find 'Search wikipedia' input",
@@ -75,28 +81,37 @@ public class FirstTest
         );
 
         waitForElementAndSendKeys(
-                By.xpath("//*[contains(@text, 'Search…')]"),
-                "Java",
+                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+                "Python",
                 "Cannot find search input",
                 5
         );
+        Assert.assertTrue("Less then two articles presented",
+                driver.findElements(By.id("org.wikipedia:id/page_list_item_title")).size() > 1);
 
         waitForElementAndClear(
                 By.id("org.wikipedia:id/search_src_text"),
-                "Cannot find search field",
+                "Cannot find element",
                 5
         );
+
+        // метод закоментирован потому, что после очистки поля кнопка Х пропадает
+//        waitForElementAndClear(
+//                By.id("org.wikipedia:id/search_src_text"),
+//                "Cannot find search field",
+//                5
+//        );
 
         // добавляем тоже самое для кнопи X - отмена поиска
-        waitForElementAndClick(
-                By.id("org.wikipedia:id/search_close_btn"),
-                "Cannot find X to cancel search",
-                5
-        );
+//        waitForElementAndClick(
+//                By.id("org.wikipedia:id/search_close_btn"),
+//                "Cannot find X to cancel search",
+//                5
+//        );
 
         waitForElementNotPresent(
-                By.id("org.wikipedia:id/search_close_btn"),
-                "X is still present on the page",
+                By.id("org.wikipedia:id/search_result_list"),
+                "Search results are still presented on the page",
                 5
         );
     }
@@ -112,7 +127,7 @@ public class FirstTest
         );
 
         waitForElementAndSendKeys(
-                By.xpath("//*[contains(@text, 'Search…')]"),
+                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
                 "Java",
                 "Cannot find search input",
                 5
@@ -179,9 +194,6 @@ public class FirstTest
 
         // добавляем метод для свайпа
         swipeUp(2000);
-        swipeUp(2000);
-        swipeUp(2000);
-        swipeUp(2000);
 
     }
 
@@ -222,19 +234,67 @@ public class FirstTest
         );
     }
 
+//    Ex3: Тест: отмена поиска
+//
+//    Написать тест, который:
+//    Ищет какое-то слово
+//    Убеждается, что найдено несколько статей
+//    Отменяет поиск
+//    Убеждается, что результат поиска пропал
+
+    // Домашка Ex3: Тест: отмена поиска
+    @Test
+    public void testSearchFieldCancel()
+    {
+        waitForElementAndClickSkip(
+                By.xpath("//*[contains(@text, 'Skip')]"),
+                "Cannot find 'Skip' button",
+                5
+        );
+
+        waitForElementAndClick(
+                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+                "Cannot find 'Search wikipedia' input",
+                5
+        );
+
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+                "Python",
+                "Cannot find search input",
+                5
+        );
+
+        // TODO: Убеждается, что найдено несколько статей
+        WebElement element = waitForElementPresent(By.id("org.wikipedia:id/view_page_title_text"),
+                "Cannot find article title",
+                15
+        );
+
+        // TODO: Отменяет поиск
+        waitForElementAndClear(
+                By.id("org.wikipedia:id/search_src_text"),
+                "Cannot find search field",
+                5
+        );
+    }
+
+
     // отдельный метод для Wait, при помощи которого будем искать элемент по Xpath и ожидать его появления
     private WebElement waitForElementPresent(By by, String error_message, long timeoutInSeconds)
     {
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
+
         // передаем сообщение об ошибке и добавляем +\n для того, чтобы оно каждый раз начиналось с новой строки
         wait.withMessage(error_message + "\n");
+
         // возвращаем возникающий элемент - by
         return wait.until(
                 ExpectedConditions.presenceOfElementLocated(by)
         );
     }
 
-        // добавляем перегрузку метода
+    // добавляем перегрузку метода
     private WebElement waitForElementPresent(By by, String error_message)
     {
         return waitForElementPresent(by, error_message, 5);
