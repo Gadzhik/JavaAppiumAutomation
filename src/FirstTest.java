@@ -438,6 +438,47 @@ public class FirstTest {
 
     };
 
+    // 06. Assert - assertion error
+    @Test
+    public void testAmountOfEmptySearch()
+    {
+        waitForElementAndClickSkip(
+                By.xpath("//*[contains(@text, 'Skip')]"),
+                "Cannot find 'Skip' button",
+                5
+        );
+
+        waitForElementAndClick(
+                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+                "Cannot find 'Search wikipedia' input",
+                5
+        );
+
+        String search_line = "df33ffgg55hh66";
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+                search_line,
+                "Cannot find 'df33ffgg55hh66 input' input",
+                5
+        );
+
+        String search_result_locator = "//*[@resource-id='org.wikipedia:id/search_results_list']//*[@resource-id='org.wikipedia:id/page_list_item_title']";
+        String empty_result_label = "//*[@text='No results']";
+
+        // ищем лейбл на странице
+        waitForElementPresent(
+                By.xpath(empty_result_label),
+                "Cannot find empty result label by the request " + search_line,
+                10
+        );
+
+        // если в тесте возникнет ошибка, то мы попадем в этот ассерт
+        assertElementNotPresent(
+                By.xpath(search_result_locator),
+                "We've found some results by request " + search_line
+        );
+    }
+
    // отдельный метод для Wait, при помощи которого будем искать элемент по Xpath и ожидать его появления
     private WebElement waitForElementPresent(By by, String error_message, long timeoutInSeconds) {
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
@@ -652,5 +693,16 @@ public class FirstTest {
     {
         List elements = driver.findElements(by);
         return elements.size();
+    }
+
+    // убеждаемся, что в ходе поиска не нашлось ни одной статьи
+    private void assertElementNotPresent(By by, String error_message)
+    {
+        // получаем количество элементов в поиске по переданному xpath
+        int amount_of_elements = getAmountOfElements(by);
+        if (amount_of_elements > 0) {
+            String default_message = "An element '" + by.toString() + "' supposed to be not present";
+            throw new AssertionError(default_message + " " + error_message);
+        }
     }
 }
