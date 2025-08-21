@@ -394,6 +394,50 @@ public class FirstTest {
 
     }
 
+    // 05. Assert - basic - проверяем, что количество элементов в поиске > 0
+    @Test
+    public void testAmountOfNotEmptySearch()
+    {
+        waitForElementAndClickSkip(
+                By.xpath("//*[contains(@text, 'Skip')]"),
+                "Cannot find 'Skip' button",
+                5
+        );
+
+        waitForElementAndClick(
+                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+                "Cannot find 'Search wikipedia' input",
+                5
+        );
+
+        String search_line = "Linkin Park Discography";
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+                search_line,
+                "Cannot find 'LP input' input",
+                5
+        );
+
+        String search_result_locator = "//*[@resource-id='org.wikipedia:id/search_results_list']//*[@resource-id='org.wikipedia:id/page_list_item_title']";
+        waitForElementPresent(
+                By.xpath(search_result_locator),
+                "Cannot find anything by the request " + search_line,
+                10
+        );
+
+        // узнаем найденное количество элементов, используем метод getAmountOfElements
+        int amount_of_search_results = getAmountOfElements(
+                By.xpath(search_result_locator)
+        );
+
+        // убеждаемся, что колич получ элем больше 0
+        Assert.assertTrue(
+                "We found too few results!",
+                amount_of_search_results > 0
+        );
+
+    };
+
    // отдельный метод для Wait, при помощи которого будем искать элемент по Xpath и ожидать его появления
     private WebElement waitForElementPresent(By by, String error_message, long timeoutInSeconds) {
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
@@ -604,4 +648,9 @@ public class FirstTest {
         this.driver.perform(Arrays.asList(swipe));
     }
 
+    private int getAmountOfElements(By by)
+    {
+        List elements = driver.findElements(by);
+        return elements.size();
+    }
 }
