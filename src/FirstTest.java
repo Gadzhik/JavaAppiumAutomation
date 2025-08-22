@@ -5,10 +5,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.Point;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -479,6 +476,77 @@ public class FirstTest {
         );
     }
 
+    // 07. Rotation - basics
+    @Test
+    public void testChangeScreenOrientationOnSearchResults()
+    {
+        waitForElementAndClickSkip(
+                By.xpath("//*[contains(@text, 'Skip')]"),
+                "Cannot find 'Skip' button",
+                5
+        );
+
+        waitForElementAndClick(
+                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+                "Cannot find 'Search wikipedia' input",
+                5
+        );
+
+        String search_line = "Java";
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+                search_line,
+                "Cannot find 'Java input' input",
+                5
+        );
+
+        waitForElementAndClick(
+                By.xpath("//*[@resource-id='org.wikipedia:id/search_results_list']/android.view.ViewGroup[3]"),
+                "Cannot find 'Java' article" + search_line,
+                15
+        );
+
+        // записываем аттрибут получаемый из метода в переменную
+        String title_before_rotation = waitForElementAndGetAttribute(
+                By.xpath("//android.view.View[@content-desc='Java (programming language)']"),
+                "text",
+                "Cannot find title of article",
+                15
+        );
+
+        // поворот экрана
+        driver.rotate(ScreenOrientation.LANDSCAPE);
+
+        // снова получаем значение названия статьи
+        String title_after_rotation = waitForElementAndGetAttribute(
+                By.xpath("//android.view.View[@content-desc='Java (programming language)']]"),
+                "text",
+                "Cannot find title of article",
+                15
+        );
+
+        // сравниваем значения до и после ротации
+        Assert.assertEquals(
+                "Article title have been changed after screen rotation",
+                title_before_rotation,
+                title_after_rotation
+        );
+
+        driver.rotate(ScreenOrientation.PORTRAIT);
+        String title_after_second_rotation = waitForElementAndGetAttribute(
+                By.xpath("//android.view.View[@content-desc='Java (programming language)']"),
+                "text",
+                "Cannot find title of article",
+                15
+        );
+
+        Assert.assertEquals(
+                "Article title have been changed after screen rotation",
+                title_before_rotation,
+                title_after_second_rotation
+        );
+    }
+
    // отдельный метод для Wait, при помощи которого будем искать элемент по Xpath и ожидать его появления
     private WebElement waitForElementPresent(By by, String error_message, long timeoutInSeconds) {
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
@@ -704,5 +772,12 @@ public class FirstTest {
             String default_message = "An element '" + by.toString() + "' supposed to be not present";
             throw new AssertionError(default_message + " " + error_message);
         }
+    }
+
+    // получаем заголовок статьи для сравнения с заголовком после ротации
+    private String waitForElementAndGetAttribute(By by, String attribute, String error_message, long timeoutInSeconds)
+    {
+        WebElement element = waitForElementPresent(by, error_message, timeoutInSeconds);
+        return element.getAttribute(attribute);
     }
 }
