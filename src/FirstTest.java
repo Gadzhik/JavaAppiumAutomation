@@ -326,7 +326,6 @@ public class FirstTest {
                 15
         );
 
-        // TODO изменить на кнопку Save и далее по коду
         waitForElementAndClick(
             By.xpath("//android.widget.TextView[@content-desc='Save']"),
                 "Cannot find button to Save article",
@@ -583,6 +582,160 @@ public class FirstTest {
                 "Cannot find article after returning from background",
                 5
         );
+    }
+
+    // HW - Ex5: Тест: Сохранение двух статей либо Онбординг
+    @Test
+    public void saveTwoArticleToMyList()
+    {
+        waitForElementAndClickSkip(
+                By.xpath("//*[contains(@text, 'Skip')]"),
+                "Cannot find 'Skip' button",
+                5
+        );
+
+        waitForElementAndClick(
+                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+                "Cannot find 'Search wikipedia' input",
+                5
+        );
+
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+                "Java",
+                "Cannot find search input",
+                5
+        );
+
+        waitForElementAndClick(
+                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_title'][@text='Java (programming language)']"),
+                "Cannot find 'Search wikipedia' article",
+                5
+        );
+
+        waitForElementAndClick(
+                By.id("org.wikipedia:id/view_page_header_image"),
+                "Cannot click to header image",
+                5
+        );
+
+        waitForElementPresent(
+                By.xpath("//android.view.View[@content-desc='Java (programming language)']"),
+                "Cannot find article title",
+                15
+        );
+
+        waitForElementAndClick(
+                By.xpath("//android.widget.TextView[@content-desc='Save']"),
+                "Cannot find button to Save article",
+                5
+        );
+
+        // кликаем по пункту меню Add to list
+        waitForElementAndClick(
+                By.id("org.wikipedia:id/snackbar_action"),
+                "Cannot find option 'Add to list'",
+                5
+        );
+
+        // очищаем поле с текстом
+        waitForElementAndClear(
+                By.id("org.wikipedia:id/text_input"),
+                "Cannot find input to set name of articles folder",
+                5
+        );
+
+        // добавляем новый список для чтения
+        String name_of_folder = "Programming list";
+
+        waitForElementAndSendKeys(
+                By.id("org.wikipedia:id/text_input"),
+                name_of_folder,
+                "Cannot find 'Name of this list' field",
+                5
+        );
+
+        // click to OK button
+        waitForElementAndClick(
+                By.id("android:id/button1"),
+                "Cannot find 'OK' button",
+                5
+        );
+
+        // добавляем вторую статью в лист
+        // клик по полю Search Wikipedia
+        waitForElementAndClick(
+                By.xpath("//*[@resource-id='org.wikipedia:id/page_toolbar_button_search'][@text='Search Wikipedia']"),
+                "Cannot find 'Search wikipedia' input",
+                5
+        );
+
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+                "Python",
+                "Cannot find search input",
+                5
+        );
+
+        waitForElementAndClick(
+                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_title'][@text='Python (programming language)']"),
+                "Cannot find 'Python' article",
+                5
+        );
+
+        waitForElementPresent(
+                By.xpath("//android.view.View[@content-desc='Python (programming language)']"),
+                "Cannot find Python article title",
+                15
+        );
+
+        waitForElementAndClick(
+                By.xpath("//android.widget.TextView[@content-desc='Save']"),
+                "Cannot find button to Save article",
+                5
+        );
+
+        // кликаем по пункту меню Add to list
+        waitForElementAndClick(
+                By.id("org.wikipedia:id/snackbar_action"),
+                "Cannot find option 'Add to list'",
+                5
+        );
+
+        // выбираем уже добавленный список
+        waitForElementAndClick(
+                By.xpath("//*[@resource-id='org.wikipedia:id/item_title'][@text='Programming list']"),
+                "Cannot find 'Programming list' folder",
+                5
+        );
+
+        // нажимаем кнопку View List
+        waitForElementAndClick(
+                By.id("org.wikipedia:id/snackbar_action"),
+                "Cannot click to 'View List' button",
+                5
+        );
+
+        // удаляем статью
+        swipeElementToLeft(
+                By.id("org.wikipedia:id/page_list_item_title"),
+                "Cannot find saved article"
+        );
+
+        WebElement title_element = waitForElementPresent(
+                By.xpath("//*[@text='Python (programming language)']"),
+                "Cannot find article title",
+                15
+        );
+
+        String article_title = title_element.getAttribute("text");
+
+        Assert.assertEquals(
+                "We see unexpected title!",
+                "Python (programming language)",
+                article_title
+        );
+
     }
 
    // отдельный метод для Wait, при помощи которого будем искать элемент по Xpath и ожидать его появления
