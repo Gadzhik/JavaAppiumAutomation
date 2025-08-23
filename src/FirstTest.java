@@ -738,6 +738,41 @@ public class FirstTest {
 
     }
 
+    // HW - Ex6: Тест: assert title
+    @Test
+    public void testAssertElementPresent()
+    {
+        waitForElementAndClickSkip(
+                By.xpath("//*[contains(@text, 'Skip')]"),
+                "Cannot find 'Skip' button",
+                5
+        );
+
+        waitForElementAndClick(
+                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+                "Cannot find 'Search wikipedia' input",
+                5
+        );
+
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+                "Java",
+                "Cannot find search input",
+                5
+        );
+
+        waitForElementAndClick(
+                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_title'][@text='Java (programming language)']"),
+                "Cannot find 'Java' article",
+                5
+        );
+
+        assertElementPresent(
+                By.xpath("//*[@content-desc='Java (programming language)']"),
+                "Cannot find article title"
+        );
+    }
+
    // отдельный метод для Wait, при помощи которого будем искать элемент по Xpath и ожидать его появления
     private WebElement waitForElementPresent(By by, String error_message, long timeoutInSeconds) {
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
@@ -970,5 +1005,14 @@ public class FirstTest {
     {
         WebElement element = waitForElementPresent(by, error_message, timeoutInSeconds);
         return element.getAttribute(attribute);
+    }
+
+    // HW - Ex6: Тест: assert title
+    private void assertElementPresent(By by, String error_message)
+    {
+        if (driver.findElements(by).isEmpty())
+        {
+            throw new AssertionError(error_message);
+        }
     }
 }
