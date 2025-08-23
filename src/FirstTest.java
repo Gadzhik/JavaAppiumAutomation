@@ -49,6 +49,8 @@ public class FirstTest {
 
         // включаем андроид-драйвер и передаем ему все capabilities и путь из которого он должен запускаться
         driver = new AndroidDriver(new URL("http://127.0.0.1:4723"), capabilities);
+        // HW - Ex7*: Поворот экрана
+        driver.rotate(ScreenOrientation.PORTRAIT);
     }
 
     // tearDown - драйвер будет выключаться
