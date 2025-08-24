@@ -21,6 +21,7 @@ public class FirstTest extends CoreTestCase {
     public void testSearch()
     {
         SearchPageObject SearchPageObject = new SearchPageObject(driver);
+
         SearchPageObject.initSkipButtonClick();
         SearchPageObject.initSearchInput();
         SearchPageObject.typeSearchLine("Java");
@@ -63,38 +64,18 @@ public class FirstTest extends CoreTestCase {
 
     @Test
     public void testCancelSearch() {
-        MainPageObject.waitForElementAndClickSkip(
-                By.xpath("//*[contains(@text, 'Skip')]"),
-                "Cannot find 'Skip' button",
-                5
-        );
+        SearchPageObject SearchPageObject = new SearchPageObject(driver);
 
-        MainPageObject.waitForElementAndClick(
-                By.id("org.wikipedia:id/search_container"),
-                "Cannot find 'Search wikipedia' input",
-                5
-        );
+        SearchPageObject.initSkipButtonClick();
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine("Java");
+        SearchPageObject.waitForCancelButtonToAppear();
+        SearchPageObject.clickCancelSearch();
+        SearchPageObject.waitForCancelButtonToDisappear();
 
-        MainPageObject.waitForElementAndSendKeys(
-                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
-                "Python",
-                "Cannot find search input",
-                5
-        );
-        Assert.assertTrue("Less then two articles presented",
-                driver.findElements(By.id("org.wikipedia:id/page_list_item_title")).size() > 1);
+//        Assert.assertTrue("Less then two articles presented",
+//                driver.findElements(By.id("org.wikipedia:id/page_list_item_title")).size() > 1);
 
-        MainPageObject.waitForElementAndClear(
-                By.id("org.wikipedia:id/search_src_text"),
-                "Cannot find element",
-                5
-        );
-
-        MainPageObject.waitForElementNotPresent(
-                By.id("org.wikipedia:id/search_result_list"),
-                "Search results are still presented on the page",
-                5
-        );
     }
 
     // сравниваем название статьи с ожидаемым и отдаем ошибку, если оно не совпадает

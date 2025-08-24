@@ -11,6 +11,7 @@ public class SearchPageObject extends MainPageObject
             SKIP_BUTTON = "//*[contains(@text, 'Skip')]",
             SEARCH_INIT_ELEMENT = "//*[contains(@text, 'Search Wikipedia')]",
             SEARCH_INPUT = "//*[contains(@text, 'Search Wikipedia')]",
+            SEARCH_CANCEL_BUTTON = "org.wikipedia:id/search_close_btn",
             SEARCH_RESULT_BY_SUBSTRING_TPL = "//*[@resource-id='org.wikipedia:id/page_list_item_description']//*[@text='{SUBSTRING}']";
 
     // берем драйвер из MainPageObject
@@ -39,6 +40,24 @@ public class SearchPageObject extends MainPageObject
         this.waitForElementAndClickSkip(By.xpath(SEARCH_INIT_ELEMENT), "Cannot find and click search init element", 5);
         // убеждаемся, что клик произошел
         this.waitForElementPresent(By.xpath(SEARCH_INIT_ELEMENT), "Cannot find search input after clicking search init element");
+    }
+
+    // ждем появления кнопки Х в поиске
+    public void waitForCancelButtonToAppear()
+    {
+        this.waitForElementPresent(By.id(SEARCH_CANCEL_BUTTON), "Cannot find 'Search Close Button'!", 5);
+    }
+
+    // проверяем отсутствие кнопки Х в поиске по покончанию теста
+    public void waitForCancelButtonToDisappear()
+    {
+        this.waitForElementNotPresent(By.id(SEARCH_CANCEL_BUTTON), "'Search Close Button' is still present!", 5);
+    }
+
+    // клик по кнопке 'Search Close Button'
+    public void clickCancelSearch()
+    {
+        this.waitForElementAndClick(By.id(SEARCH_CANCEL_BUTTON), "Cannot find and click 'Search Close Button' !", 5);
     }
 
     // метод для ввода значения в строку
