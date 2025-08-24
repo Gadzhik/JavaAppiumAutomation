@@ -1,0 +1,55 @@
+package lib.ui;
+
+import io.appium.java_client.AppiumDriver;
+import org.openqa.selenium.By;
+
+// тут будут методы которые будут использоваться для поиска
+public class SearchPageObject extends MainPageObject
+{
+    // задаем константы для xpath
+    private static final String
+            SKIP_BUTTON = "//*[contains(@text, 'Skip')]",
+            SEARCH_INIT_ELEMENT = "//*[contains(@text, 'Search Wikipedia')]",
+            SEARCH_INPUT = "//*[contains(@text, 'Search Wikipedia')]",
+            SEARCH_RESULT_BY_SUBSTRING_TPL = "//*[@resource-id='org.wikipedia:id/page_list_item_description']//*[@text='{SUBSTRING}']";
+
+    // берем драйвер из MainPageObject
+    public SearchPageObject(AppiumDriver driver)
+    {
+        super(driver);
+    }
+
+    // метод для преобразования строки(substring) для метода waitForSearchResult
+    /* Section for TEMPLATES METHODS */
+    private static String getResultSearchElement(String substring)
+    {
+        // пишем, что({SUBSTRING}) на что(substring) мы будем заменять
+        return SEARCH_RESULT_BY_SUBSTRING_TPL.replace("{SUBSTRING}", substring);
+    }
+    /* Section for TEMPLATES METHODS */
+
+    public void initSkipButtonClick()
+    {
+        this.waitForElementAndClickSkip(By.xpath(SKIP_BUTTON), "Cannot find 'SKIP' button", 5);
+    }
+
+    // метод который инициализирует процесс поиска
+    public void initSearchInput()
+    {
+        this.waitForElementAndClickSkip(By.xpath(SEARCH_INIT_ELEMENT), "Cannot find and click search init element", 5);
+        // убеждаемся, что клик произошел
+        this.waitForElementPresent(By.xpath(SEARCH_INIT_ELEMENT), "Cannot find search input after clicking search init element");
+    }
+
+    // метод для ввода значения в строку
+    public void typeSearchLine(String search_line)
+    {
+        this.waitForElementAndSendKeys(By.xpath(SEARCH_INPUT), search_line, "Cannot find and type into search input", 5);
+    }
+
+    public void waitForSearchResult(String substring)
+    {
+        String search_result_xpath = getResultSearchElement(substring);
+        this.waitForElementPresent(By.xpath(search_result_xpath), "Cannot find search result with substring " + substring);
+    }
+}
