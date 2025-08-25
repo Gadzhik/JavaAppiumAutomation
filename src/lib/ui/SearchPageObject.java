@@ -12,7 +12,7 @@ public class SearchPageObject extends MainPageObject
             SEARCH_INIT_ELEMENT = "//*[contains(@text, 'Search Wikipedia')]",
             SEARCH_INPUT = "//*[contains(@text, 'Search Wikipedia')]",
             SEARCH_CANCEL_BUTTON = "org.wikipedia:id/search_close_btn",
-            SEARCH_RESULT_BY_SUBSTRING_TPL = "//*[@resource-id='org.wikipedia:id/page_list_item_description']//*[@text='{SUBSTRING}']";
+            SEARCH_RESULT_BY_SUBSTRING_TPL = "//*[@resource-id='org.wikipedia:id/page_list_item_title'][@text='{SUBSTRING}']";
 
     // берем драйвер из MainPageObject
     public SearchPageObject(AppiumDriver driver)
@@ -70,5 +70,12 @@ public class SearchPageObject extends MainPageObject
     {
         String search_result_xpath = getResultSearchElement(substring);
         this.waitForElementPresent(By.xpath(search_result_xpath), "Cannot find search result with substring " + substring);
+    }
+
+    // используем для ArticlePageObject
+    public void clickByArticleWithSubstring(String substring)
+    {
+        String search_result_xpath = getResultSearchElement(substring);
+        this.waitForElementAndClick(By.xpath(search_result_xpath), "Cannot find search and click result with substring " + substring, 10);
     }
 }

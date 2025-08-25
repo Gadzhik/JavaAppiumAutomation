@@ -1,4 +1,5 @@
 import lib.CoreTestCase;
+import lib.ui.ArticlePageObject;
 import lib.ui.MainPageObject;
 import lib.ui.SearchPageObject;
 import org.junit.Assert;
@@ -25,7 +26,7 @@ public class FirstTest extends CoreTestCase {
         SearchPageObject.initSkipButtonClick();
         SearchPageObject.initSearchInput();
         SearchPageObject.typeSearchLine("Java");
-        SearchPageObject.waitForSearchResult("Object-oriented programming language");
+        SearchPageObject.waitForSearchResult("Java (programming language)");
     }
 
     @Test
@@ -80,42 +81,17 @@ public class FirstTest extends CoreTestCase {
 
     // сравниваем название статьи с ожидаемым и отдаем ошибку, если оно не совпадает
     @Test
-    public void testCompareArticleTitle() {
-        MainPageObject.waitForElementAndClickSkip(
-                By.xpath("//*[contains(@text, 'Skip')]"),
-                "Cannot find 'Skip' button",
-                5
-        );
+    public void testCompareArticleTitle()
+    {
+        SearchPageObject SearchPageObject = new SearchPageObject(driver);
 
-        MainPageObject.waitForElementAndClick(
-                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
-                "Cannot find 'Search Wikipedia' field",
-                10
-        );
+        SearchPageObject.initSkipButtonClick();
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine("Java");
+        SearchPageObject.clickByArticleWithSubstring("Java (programming language)");
 
-        MainPageObject.waitForElementAndSendKeys(
-                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
-                "Java",
-                "Cannot find search input",
-                5
-        );
-
-        // метод для клика по статье, которую мы нашли в поиске
-        MainPageObject.waitForElementAndClick(
-                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_description']//*[@text='Object-oriented programming language']"),
-                "Cannot find 'Search Wikipedia Element For Click' input",
-                5
-        );
-
-        // ждем пока статья подгрузится и записываем заголовок статьи в переменную
-        WebElement title_element = MainPageObject.waitForElementPresent(
-                By.id("org.wikipedia:id/view_page_title_text"),
-                "Cannot find article title",
-                15
-        );
-
-        // используем title_element для получения аттрибута текста из заголовка (получаем название статьи для использования в ассерте - ниже)
-        String article_title = title_element.getAttribute("text");
+        ArticlePageObject ArticlePageObject = new ArticlePageObject(driver);
+        String article_title = ArticlePageObject.getArticleTitle();
 
         Assert.assertEquals(
                 "We see unexpected title!",
@@ -124,45 +100,19 @@ public class FirstTest extends CoreTestCase {
         );
     }
 
-    // добавляем тест для проверки свайпа
+    // добавляем тест для проверки свайпа - НЕ РАБОТАЕТ 24.08.2025
     @Test
-    public void testSwipeArticle() {
-        MainPageObject.waitForElementAndClickSkip(
-                By.xpath("//*[contains(@text, 'Skip')]"),
-                "Cannot find 'Skip' button",
-                5
-        );
+    public void testSwipeArticle()
+    {
+        SearchPageObject SearchPageObject = new SearchPageObject(driver);
+        SearchPageObject.initSkipButtonClick();
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine("Appium");
+        SearchPageObject.clickByArticleWithSubstring("Appium");
 
-        MainPageObject.waitForElementAndClick(
-                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
-                "Cannot find 'Search wikipedia' input",
-                5
-        );
-
-        MainPageObject.waitForElementAndSendKeys(
-                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
-                "Appium",
-                "Cannot find search input",
-                5
-        );
-
-        MainPageObject.waitForElementAndClick(
-                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_title'][@text='Appium']"),
-                "Cannot find 'Appium article for ElementAndClick' input",
-                15
-        );
-
-        MainPageObject.waitForElementPresent(
-                By.xpath("//*[@content-desc='Appium']"),
-                "Cannot find article title",
-                15
-        );
-
-        MainPageObject.swipeUpToFindElement(
-                By.xpath("//*[@content-desc='View article in browser']"),
-                "Cannot find the end of the article",
-                10
-        );
+        ArticlePageObject ArticlePageObject = new ArticlePageObject(driver);
+        ArticlePageObject.waitForTitleElement();
+        ArticlePageObject.swipeToFooter();
 
     }
 
