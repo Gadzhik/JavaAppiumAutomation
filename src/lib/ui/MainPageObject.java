@@ -2,6 +2,8 @@ package lib.ui;
 
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.TouchAction;
+import io.appium.java_client.touch.WaitOptions;
+import io.appium.java_client.touch.offset.PointOption;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
@@ -80,38 +82,68 @@ public class MainPageObject
         element.clear();
         return element;
     }
+/* МЕТОД СВАЙПА ДЛЯ СТАРЫХ БИБЛИОТЕК*/
 
-    // пишем метод для свайпа снизу экрана вверх
-    public void swipeUp(int timeOfSwipe) {
-        TouchAction action = new TouchAction(driver);
+//    // пишем метод для свайпа снизу экрана вверх
+//    public void swipeUp(int timeOfSwipe) {
+//        TouchAction action = new TouchAction(driver);
+//
+//        // определяем размер экрана и получаем параметры девайса
+//        Dimension size = driver
+//                .manage()
+//                .window()
+//                .getSize();
+//
+//        // задаем некоторые переменные.
+//        // 1. Начальная перем по оси Х.
+//        // 2. Конечная перем по оси Х.
+//        // 3. Начальная перем по оси У.
+//        // 4. Конечная перем по оси У. Т.к палец будет двигаться снизу вверх, то меняться будет только ось У.
+//        int x = size.width / 2;
+//
+//        // получ нач точку, кот находится в 80% экрана, внизу
+//        int start_y = (int) (size.height * 0.8);
+//        int end_y = (int) (size.height * 0.2);
+//
+//        // добавляем действие - свайп. Нажимаем на экран, ждем некоторое время и перемещаем свайп вверх. Выбираем точку внизу экрана (где то по середине), после этого провести свайпом вверх экрана в точку которая находится в середине (по горизонтальной оси), после этого отпускаем "палец"
+//        // perform() - отправляет всю указанную последовательность действий на выполнение
+//        // press() - координаты для нажатия
+//        // moveTo() - координаты для движения
+//        action
+//                .press(PointOption.point(x, start_y)
+//                .waitAction(WaitOptions.waitOptions(Duration.ofMillis(timeOfSwipe)))
+//                .moveTo(PointOption.point(x, end_y))
+//                .release()
+//                .perform();
+//    }
 
-        // определяем размер экрана и получаем параметры девайса
-        Dimension size = driver
-                .manage()
-                .window()
-                .getSize();
+    /* МЕТОД СВАЙПА ДЛЯ НОВЫХ БИБЛИОТЕК - java-client-7.0.0...*/
 
-        // задаем некоторые переменные.
-        // 1. Начальная перем по оси Х.
-        // 2. Конечная перем по оси Х.
-        // 3. Начальная перем по оси У.
-        // 4. Конечная перем по оси У. Т.к палец будет двигаться снизу вверх, то меняться будет только ось У.
-        int x = size.width / 2;
+    public void swipeUp(int timeOfSwipe)
+    {
+        Dimension size = driver.manage().window().getSize();
+        int startY = (int) (size.height * 0.70);
+        int endY = (int) (size.height * 0.30);
+        int centerX = size.width / 2;
 
-        // получ нач точку, кот находится в 80% экрана, внизу
-        int start_y = (int) (size.height * 0.8);
-        int end_y = (int) (size.height * 0.2);
+        PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH,"finger");
+        Sequence swipe = new Sequence(finger,1)
 
-        // добавляем действие - свайп. Нажимаем на экран, ждем некоторое время и перемещаем свайп вверх. Выбираем точку внизу экрана (где то по середине), после этого провести свайпом вверх экрана в точку которая находится в середине (по горизонтальной оси), после этого отпускаем "палец"
-        // perform() - отправляет всю указанную последовательность действий на выполнение
-        // press() - координаты для нажатия
-        // moveTo() - координаты для движения
-        action
-                .press(x, start_y)
-                .waitAction(timeOfSwipe)
-                .moveTo(x, end_y)
-                .release()
-                .perform();
+                //Двигаем палец на начальную позицию
+                .addAction(finger.createPointerMove(Duration.ofSeconds(0),
+                        PointerInput.Origin.viewport(), centerX, startY))
+                //Палец прикасается к экрану
+                .addAction(finger.createPointerDown(0))
+
+                //Палец двигается к конечной точке
+                .addAction(finger.createPointerMove(Duration.ofMillis(timeOfSwipe),
+                        PointerInput.Origin.viewport(), centerX, endY))
+
+                //Убираем палец с экрана
+                .addAction(finger.createPointerUp(0));
+
+        //Выполняем действия
+        driver.perform(Arrays.asList(swipe));
     }
 
     // Module 4. Lesson 02. Swipe till element found - swipeQuick, counter

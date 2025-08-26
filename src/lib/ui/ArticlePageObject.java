@@ -1,15 +1,16 @@
 package lib.ui;
 
-
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+
+import java.time.Duration;
 
 // для работы со статьями
 public class ArticlePageObject extends MainPageObject
 {
     private static final String
-        TITLE = "//*[@text='Java (programming language)']",
+        TITLE = "//android.view.View[@content-desc='Object-oriented programming language']",
         FOOTER_ELEMENT = "//*[@content-desc='View article in browser']";
 
     public ArticlePageObject(AppiumDriver driver)
@@ -27,10 +28,11 @@ public class ArticlePageObject extends MainPageObject
     public String getArticleTitle()
     {
         WebElement title_element = waitForTitleElement();
-        return title_element.getAttribute("text");
+        return title_element.getAttribute("contentDescription");
     }
 
     // добавляем метод для свайпа
+    // если оставить TITLE = "//android.view.View[@content-desc='']", то свайп работает для теста testSwipeArticle
     public void swipeToFooter()
     {
         this.swipeUpToFindElement(

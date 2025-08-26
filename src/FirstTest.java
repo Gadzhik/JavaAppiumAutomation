@@ -5,6 +5,8 @@ import lib.ui.SearchPageObject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.*;
+
+import java.time.Duration;
 import java.util.List;
 
 public class FirstTest extends CoreTestCase {
@@ -95,7 +97,7 @@ public class FirstTest extends CoreTestCase {
 
         Assert.assertEquals(
                 "We see unexpected title!",
-                "Java (programming language)",
+                "Object-oriented programming language",
                 article_title
         );
     }
@@ -432,7 +434,7 @@ public class FirstTest extends CoreTestCase {
                 5
         );
 
-        driver.runAppInBackground(2);
+        driver.runAppInBackground(Duration.ofSeconds(2));
 
         MainPageObject.waitForElementPresent(
                 By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_title'][@text='Java (programming language)']"),
