@@ -1,7 +1,5 @@
 import lib.CoreTestCase;
-import lib.ui.ArticlePageObject;
-import lib.ui.MainPageObject;
-import lib.ui.SearchPageObject;
+import lib.ui.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.*;
@@ -149,103 +147,29 @@ public class FirstTest extends CoreTestCase {
     }
 
     // Module 4. 03. Save first article - overlay, swipe left, variable
+    // TODO Тест не работает, падает на этом методе/шаге - waitForArticleToAppearByTitle (lesson 06. testSaveFirstArticle)
     @Test
     public void testSaveFirstArticleToMyList()
     {
-        MainPageObject.waitForElementAndClickSkip(
-                By.xpath("//*[contains(@text, 'Skip')]"),
-                "Cannot find 'Skip' button",
-                5
-        );
+        SearchPageObject SearchPageObject = new SearchPageObject(driver);
 
-        // используем первые 4 метода для перехода к нужной статье
-        MainPageObject.waitForElementAndClick(
-                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
-                "Cannot find 'Search wikipedia' input",
-                5
-        );
+        SearchPageObject.initSkipButtonClick();
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine("Java");
+        SearchPageObject.clickByArticleWithSubstring("Java (programming language)");
 
-        MainPageObject.waitForElementAndSendKeys(
-                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
-                "Java",
-                "Cannot find search input",
-                5
-        );
-
-        MainPageObject.waitForElementAndClick(
-                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_title'][@text='Java (programming language)']"),
-                "Cannot find 'Search wikipedia' article",
-                5
-        );
-
-        // наверное стоит добавить нажатие на Header, потому, что не получается найти кнопку Got it в дереве ресурсов
-        MainPageObject.waitForElementAndClick(
-                By.id("org.wikipedia:id/view_page_header_image"),
-                "Cannot click to header image",
-                5
-        );
-
-        MainPageObject.waitForElementPresent(
-                By.xpath("//android.view.View[@content-desc='Java (programming language)']"),
-                "Cannot find article title",
-                15
-        );
-
-        MainPageObject.waitForElementAndClick(
-            By.xpath("//android.widget.TextView[@content-desc='Save']"),
-                "Cannot find button to Save article",
-                5
-        );
-
-        // кликаем по пункту меню Add to list
-        MainPageObject.waitForElementAndClick(
-                By.id("org.wikipedia:id/snackbar_action"),
-                "Cannot find option 'Add to list'",
-                5
-        );
-
-        // очищаем поле с текстом
-        MainPageObject.waitForElementAndClear(
-                By.id("org.wikipedia:id/text_input"),
-                "Cannot find input to set name of articles folder",
-                5
-        );
-
-        // добавляем новый список для чтения
+        ArticlePageObject ArticlePageObject = new ArticlePageObject(driver);
+        ArticlePageObject.waitForTitleElement();
+        String article_title = ArticlePageObject.getArticleTitle();
         String name_of_folder = "Programming list";
 
-        MainPageObject.waitForElementAndSendKeys(
-                By.id("org.wikipedia:id/text_input"),
-                name_of_folder,
-                "Cannot find 'Name of this list' field",
-                5
-        );
+        ArticlePageObject.addArticleToMyList(name_of_folder);
 
-        // click to OK button
-        MainPageObject.waitForElementAndClick(
-                By.id("android:id/button1"),
-                "Cannot find 'OK' button",
-                5
-        );
+        NavigationUI NavigationUI = new NavigationUI(driver);
+        NavigationUI.clickMyLists();
 
-        // нажимаем кнопку View List
-        MainPageObject.waitForElementAndClick(
-                By.id("org.wikipedia:id/snackbar_action"),
-                "Cannot click to 'View List' button",
-                5
-        );
-
-        MainPageObject.swipeElementToLeft(
-                By.id("org.wikipedia:id/page_list_item_title"),
-                "Cannot find saved article"
-        );
-
-        // убеждаемся, что статья отсутствует
-        MainPageObject.waitForElementNotPresent(
-                By.xpath("//*[@text='Java (programming language)']"),
-                "Cannot delete saved article",
-                5
-        );
+        MyListsPageObject MyListsPageObject = new MyListsPageObject(driver);
+        MyListsPageObject.swipeByArticleToDelete(article_title);
 
     }
 
@@ -253,37 +177,14 @@ public class FirstTest extends CoreTestCase {
     @Test
     public void testAmountOfNotEmptySearch()
     {
-        MainPageObject.waitForElementAndClickSkip(
-                By.xpath("//*[contains(@text, 'Skip')]"),
-                "Cannot find 'Skip' button",
-                5
-        );
 
-        MainPageObject.waitForElementAndClick(
-                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
-                "Cannot find 'Search wikipedia' input",
-                5
-        );
+        SearchPageObject SearchPageObject = new SearchPageObject(driver);
 
+        SearchPageObject.initSkipButtonClick();
+        SearchPageObject.initSearchInput();
         String search_line = "Linkin Park Discography";
-        MainPageObject.waitForElementAndSendKeys(
-                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
-                search_line,
-                "Cannot find 'LP input' input",
-                5
-        );
-
-        String search_result_locator = "//*[@resource-id='org.wikipedia:id/search_results_list']//*[@resource-id='org.wikipedia:id/page_list_item_title']";
-        MainPageObject.waitForElementPresent(
-                By.xpath(search_result_locator),
-                "Cannot find anything by the request " + search_line,
-                10
-        );
-
-        // узнаем найденное количество элементов, используем метод getAmountOfElements
-        int amount_of_search_results = MainPageObject.getAmountOfElements(
-                By.xpath(search_result_locator)
-        );
+        SearchPageObject.typeSearchLine(search_line);
+        int amount_of_search_results =SearchPageObject.getAmountOfFoundArticles();
 
         // убеждаемся, что колич получ элем больше 0
         Assert.assertTrue(
@@ -297,41 +198,19 @@ public class FirstTest extends CoreTestCase {
     @Test
     public void testAmountOfEmptySearch()
     {
-        MainPageObject.waitForElementAndClickSkip(
-                By.xpath("//*[contains(@text, 'Skip')]"),
-                "Cannot find 'Skip' button",
-                5
-        );
 
-        MainPageObject.waitForElementAndClick(
-                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
-                "Cannot find 'Search wikipedia' input",
-                5
-        );
+        SearchPageObject SearchPageObject = new SearchPageObject(driver);
 
+        SearchPageObject.initSkipButtonClick();
+        SearchPageObject.initSearchInput();
         String search_line = "df33ffgg55hh66";
-        MainPageObject.waitForElementAndSendKeys(
-                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
-                search_line,
-                "Cannot find 'df33ffgg55hh66 input' input",
-                5
-        );
+        SearchPageObject.typeSearchLine(search_line);
+        SearchPageObject.waitForEmptyResultsLabel();
+        SearchPageObject.assertThereIsNoResultOfSearch();
 
-        String search_result_locator = "//*[@resource-id='org.wikipedia:id/search_results_list']//*[@resource-id='org.wikipedia:id/page_list_item_title']";
-        String empty_result_label = "//*[@text='No results']";
+        //String search_result_locator = "//*[@resource-id='org.wikipedia:id/search_results_list']//*[@resource-id='org.wikipedia:id/page_list_item_title']";
 
-        // ищем лейбл на странице
-        MainPageObject.waitForElementPresent(
-                By.xpath(empty_result_label),
-                "Cannot find empty result label by the request " + search_line,
-                10
-        );
 
-        // если в тесте возникнет ошибка, то мы попадем в этот ассерт
-        MainPageObject.assertElementNotPresent(
-                By.xpath(search_result_locator),
-                "We've found some results by request " + search_line
-        );
     }
 
     // 07. Rotation - basics

@@ -12,7 +12,9 @@ public class SearchPageObject extends MainPageObject
             SEARCH_INIT_ELEMENT = "//*[contains(@text, 'Search Wikipedia')]",
             SEARCH_INPUT = "//*[contains(@text, 'Search Wikipedia')]",
             SEARCH_CANCEL_BUTTON = "org.wikipedia:id/search_close_btn",
-            SEARCH_RESULT_BY_SUBSTRING_TPL = "//*[@resource-id='org.wikipedia:id/page_list_item_title'][@text='{SUBSTRING}']";
+            SEARCH_RESULT_BY_SUBSTRING_TPL = "//*[@resource-id='org.wikipedia:id/page_list_item_title'][@text='{SUBSTRING}']",
+            SEARCH_RESULT_ELEMENT = "//*[@resource-id='org.wikipedia:id/search_results_list']//*[@resource-id='org.wikipedia:id/page_list_item_title']",
+            SEARCH_EMPTY_RESULT_ELEMENT = "//*[@text='No results']";
 
     // берем драйвер из MainPageObject
     public SearchPageObject(AppiumDriver driver)
@@ -78,4 +80,28 @@ public class SearchPageObject extends MainPageObject
         String search_result_xpath = getResultSearchElement(substring);
         this.waitForElementAndClick(By.xpath(search_result_xpath), "Cannot find search and click result with substring " + substring, 10);
     }
+
+    // метод для получения колич статей - тест testAmountOfNotEmptySearch
+    public int getAmountOfFoundArticles()
+    {
+        this.waitForElementPresent(
+                By.xpath(SEARCH_RESULT_ELEMENT),
+                "Cannot find anything by the request",
+                10
+        );
+        // узнаем найденное количество элементов, используем метод getAmountOfElements
+        return this.getAmountOfElements(By.xpath(SEARCH_RESULT_ELEMENT));
+    }
+
+    // метод для подтверждения, что на странице нет никаких результатов - тест testAmountOfEmptySearch
+    public void waitForEmptyResultsLabel()
+    {
+        this.waitForElementPresent(By.xpath(SEARCH_EMPTY_RESULT_ELEMENT), "Cannot find empty result element~~~", 10);
+    }
+
+    public void assertThereIsNoResultOfSearch()
+    {
+        this.waitForElementNotPresent(By.xpath(SEARCH_RESULT_ELEMENT), "We supposed no to find any result!!!", 10);
+    }
+
 }
