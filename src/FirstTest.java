@@ -1,14 +1,12 @@
 import lib.CoreTestCase;
 import lib.ui.*;
-import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.*;
-
-import java.time.Duration;
 import java.util.List;
 
 public class FirstTest extends CoreTestCase {
 
+    // TODO - удалить после рефактора домашек
     private MainPageObject MainPageObject;
 
     protected void setUp() throws Exception
@@ -16,17 +14,6 @@ public class FirstTest extends CoreTestCase {
         super.setUp();
 
         MainPageObject = new MainPageObject(driver);
-    }
-
-    @Test
-    public void testSearch()
-    {
-        SearchPageObject SearchPageObject = new SearchPageObject(driver);
-
-        SearchPageObject.initSkipButtonClick();
-        SearchPageObject.initSearchInput();
-        SearchPageObject.typeSearchLine("Java");
-        SearchPageObject.waitForSearchResult("Java (programming language)");
     }
 
     @Test
@@ -54,66 +41,13 @@ public class FirstTest extends CoreTestCase {
 
         List<WebElement> search_Results = driver.findElementsById("org.wikipedia:id/page_list_item_title");
 
-        Assert.assertFalse("There is no results in the search", search_Results.isEmpty());
+        assertFalse("There is no results in the search", search_Results.isEmpty());
 
         for (WebElement result : search_Results) {
             String resultText = result.getText();
-            Assert.assertTrue("Result does not contain the search word: " + resultText,
+            assertTrue("Result does not contain the search word: " + resultText,
                     resultText.toLowerCase().contains(search_word.toLowerCase()));
         }
-    }
-
-    @Test
-    public void testCancelSearch() {
-        SearchPageObject SearchPageObject = new SearchPageObject(driver);
-
-        SearchPageObject.initSkipButtonClick();
-        SearchPageObject.initSearchInput();
-        SearchPageObject.typeSearchLine("Java");
-        SearchPageObject.waitForCancelButtonToAppear();
-        SearchPageObject.clickCancelSearch();
-        SearchPageObject.waitForCancelButtonToDisappear();
-
-//        Assert.assertTrue("Less then two articles presented",
-//                driver.findElements(By.id("org.wikipedia:id/page_list_item_title")).size() > 1);
-
-    }
-
-    // сравниваем название статьи с ожидаемым и отдаем ошибку, если оно не совпадает
-    @Test
-    public void testCompareArticleTitle()
-    {
-        SearchPageObject SearchPageObject = new SearchPageObject(driver);
-
-        SearchPageObject.initSkipButtonClick();
-        SearchPageObject.initSearchInput();
-        SearchPageObject.typeSearchLine("Java");
-        SearchPageObject.clickByArticleWithSubstring("Java (programming language)");
-
-        ArticlePageObject ArticlePageObject = new ArticlePageObject(driver);
-        String article_title = ArticlePageObject.getArticleTitle();
-
-        Assert.assertEquals(
-                "We see unexpected title!",
-                "Object-oriented programming language",
-                article_title
-        );
-    }
-
-    // добавляем тест для проверки свайпа - НЕ РАБОТАЕТ 24.08.2025
-    @Test
-    public void testSwipeArticle()
-    {
-        SearchPageObject SearchPageObject = new SearchPageObject(driver);
-        SearchPageObject.initSkipButtonClick();
-        SearchPageObject.initSearchInput();
-        SearchPageObject.typeSearchLine("Appium");
-        SearchPageObject.clickByArticleWithSubstring("Appium");
-
-        ArticlePageObject ArticlePageObject = new ArticlePageObject(driver);
-        ArticlePageObject.waitForTitleElement();
-        ArticlePageObject.swipeToFooter();
-
     }
 
     @Test
@@ -144,121 +78,6 @@ public class FirstTest extends CoreTestCase {
                 "Search Wikipedia",
                 5
         );
-    }
-
-    // Module 4. 03. Save first article - overlay, swipe left, variable
-    // TODO Тест не работает, падает на этом методе/шаге - waitForArticleToAppearByTitle (lesson 06. testSaveFirstArticle)
-    @Test
-    public void testSaveFirstArticleToMyList()
-    {
-        SearchPageObject SearchPageObject = new SearchPageObject(driver);
-
-        SearchPageObject.initSkipButtonClick();
-        SearchPageObject.initSearchInput();
-        SearchPageObject.typeSearchLine("Java");
-        SearchPageObject.clickByArticleWithSubstring("Java (programming language)");
-
-        ArticlePageObject ArticlePageObject = new ArticlePageObject(driver);
-        ArticlePageObject.waitForTitleElement();
-        String article_title = ArticlePageObject.getArticleTitle();
-        String name_of_folder = "Programming list";
-
-        ArticlePageObject.addArticleToMyList(name_of_folder);
-
-        NavigationUI NavigationUI = new NavigationUI(driver);
-        NavigationUI.clickMyLists();
-
-        MyListsPageObject MyListsPageObject = new MyListsPageObject(driver);
-        MyListsPageObject.swipeByArticleToDelete(article_title);
-
-    }
-
-    // 05. Assert - basic - проверяем, что количество элементов в поиске > 0
-    @Test
-    public void testAmountOfNotEmptySearch()
-    {
-
-        SearchPageObject SearchPageObject = new SearchPageObject(driver);
-
-        SearchPageObject.initSkipButtonClick();
-        SearchPageObject.initSearchInput();
-        String search_line = "Linkin Park Discography";
-        SearchPageObject.typeSearchLine(search_line);
-        int amount_of_search_results =SearchPageObject.getAmountOfFoundArticles();
-
-        // убеждаемся, что колич получ элем больше 0
-        Assert.assertTrue(
-                "We found too few results!",
-                amount_of_search_results > 0
-        );
-
-    };
-
-    // 06. Assert - assertion error
-    @Test
-    public void testAmountOfEmptySearch()
-    {
-
-        SearchPageObject SearchPageObject = new SearchPageObject(driver);
-
-        SearchPageObject.initSkipButtonClick();
-        SearchPageObject.initSearchInput();
-        String search_line = "df33ffgg55hh66";
-        SearchPageObject.typeSearchLine(search_line);
-        SearchPageObject.waitForEmptyResultsLabel();
-        SearchPageObject.assertThereIsNoResultOfSearch();
-
-        //String search_result_locator = "//*[@resource-id='org.wikipedia:id/search_results_list']//*[@resource-id='org.wikipedia:id/page_list_item_title']";
-
-    }
-
-    // 07. Rotation - basics
-    @Test
-    public void testChangeScreenOrientationOnSearchResults()
-    {
-        SearchPageObject SearchPageObject = new SearchPageObject(driver);
-        SearchPageObject.initSkipButtonClick();
-        SearchPageObject.initSearchInput();
-        SearchPageObject.typeSearchLine("Java");
-        SearchPageObject.clickByArticleWithSubstring("Java (programming language)");
-
-        ArticlePageObject ArticlePageObject = new ArticlePageObject(driver);
-
-        // записываем заголовок статьи в переменную
-        String title_before_rotation = ArticlePageObject.getArticleTitle();
-        this.rotateScreenLandscape();
-
-        // снова получаем значение названия статьи
-        String title_after_rotation = ArticlePageObject.getArticleTitle();
-
-        // сравниваем значения до и после ротации
-        Assert.assertEquals(
-                "Article title have been changed after screen rotation",
-                title_before_rotation,
-                title_after_rotation
-        );
-
-        this.rotateScreenPortrait();
-        String title_after_second_rotation = ArticlePageObject.getArticleTitle();
-
-        Assert.assertEquals(
-                "Article title have been changed after screen rotation",
-                title_before_rotation,
-                title_after_second_rotation
-        );
-    }
-
-    // Less 4. 08. Background - basics
-    @Test
-    public void testCheckSearchArticleInBackground()
-    {
-        SearchPageObject SearchPageObject = new SearchPageObject(driver);
-        SearchPageObject.initSkipButtonClick();
-        SearchPageObject.initSearchInput();
-        SearchPageObject.typeSearchLine("Java");
-        SearchPageObject.waitForSearchResult("Java (programming language)");
-        this.backgroundApp(2);
-        SearchPageObject.waitForSearchResult("Java (programming language)");
     }
 
     // HW - Ex5: Тест: Сохранение двух статей либо Онбординг
@@ -407,7 +226,7 @@ public class FirstTest extends CoreTestCase {
 
         String article_title = title_element.getAttribute("text");
 
-        Assert.assertEquals(
+        assertEquals(
                 "We see unexpected title!",
                 "Python (programming language)",
                 article_title
