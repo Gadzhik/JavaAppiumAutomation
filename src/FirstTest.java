@@ -210,57 +210,26 @@ public class FirstTest extends CoreTestCase {
 
         //String search_result_locator = "//*[@resource-id='org.wikipedia:id/search_results_list']//*[@resource-id='org.wikipedia:id/page_list_item_title']";
 
-
     }
 
     // 07. Rotation - basics
     @Test
     public void testChangeScreenOrientationOnSearchResults()
     {
-        MainPageObject.waitForElementAndClickSkip(
-                By.xpath("//*[contains(@text, 'Skip')]"),
-                "Cannot find 'Skip' button",
-                5
-        );
+        SearchPageObject SearchPageObject = new SearchPageObject(driver);
+        SearchPageObject.initSkipButtonClick();
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine("Java");
+        SearchPageObject.clickByArticleWithSubstring("Java (programming language)");
 
-        MainPageObject.waitForElementAndClick(
-                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
-                "Cannot find 'Search wikipedia' input",
-                5
-        );
+        ArticlePageObject ArticlePageObject = new ArticlePageObject(driver);
 
-        String search_line = "Java";
-        MainPageObject.waitForElementAndSendKeys(
-                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
-                search_line,
-                "Cannot find 'Java input' input",
-                5
-        );
-
-        MainPageObject.waitForElementAndClick(
-                By.xpath("//*[@resource-id='org.wikipedia:id/search_results_list']/android.view.ViewGroup[3]"),
-                "Cannot find 'Java' article" + search_line,
-                15
-        );
-
-        // записываем аттрибут получаемый из метода в переменную
-        String title_before_rotation = MainPageObject.waitForElementAndGetAttribute(
-                By.xpath("//android.view.View[@content-desc='Java (programming language)']"),
-                "text",
-                "Cannot find title of article",
-                15
-        );
-
-        // поворот экрана
-        driver.rotate(ScreenOrientation.LANDSCAPE);
+        // записываем заголовок статьи в переменную
+        String title_before_rotation = ArticlePageObject.getArticleTitle();
+        this.rotateScreenLandscape();
 
         // снова получаем значение названия статьи
-        String title_after_rotation = MainPageObject.waitForElementAndGetAttribute(
-                By.xpath("//android.view.View[@content-desc='Java (programming language)']]"),
-                "text",
-                "Cannot find title of article",
-                15
-        );
+        String title_after_rotation = ArticlePageObject.getArticleTitle();
 
         // сравниваем значения до и после ротации
         Assert.assertEquals(
@@ -269,13 +238,8 @@ public class FirstTest extends CoreTestCase {
                 title_after_rotation
         );
 
-        driver.rotate(ScreenOrientation.PORTRAIT);
-        String title_after_second_rotation = MainPageObject.waitForElementAndGetAttribute(
-                By.xpath("//android.view.View[@content-desc='Java (programming language)']"),
-                "text",
-                "Cannot find title of article",
-                15
-        );
+        this.rotateScreenPortrait();
+        String title_after_second_rotation = ArticlePageObject.getArticleTitle();
 
         Assert.assertEquals(
                 "Article title have been changed after screen rotation",
@@ -288,38 +252,13 @@ public class FirstTest extends CoreTestCase {
     @Test
     public void testCheckSearchArticleInBackground()
     {
-        MainPageObject.waitForElementAndClickSkip(
-                By.xpath("//*[contains(@text, 'Skip')]"),
-                "Cannot find 'Skip' button",
-                5
-        );
-
-        MainPageObject.waitForElementAndClick(
-                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
-                "Cannot find 'Search wikipedia' input",
-                5
-        );
-
-        MainPageObject.waitForElementAndSendKeys(
-                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
-                "Java",
-                "Cannot find search input",
-                5
-        );
-
-        MainPageObject.waitForElementPresent(
-                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_title'][@text='Java (programming language)']"),
-                "Cannot find 'Search wikipedia' article",
-                5
-        );
-
-        driver.runAppInBackground(Duration.ofSeconds(2));
-
-        MainPageObject.waitForElementPresent(
-                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_title'][@text='Java (programming language)']"),
-                "Cannot find article after returning from background",
-                5
-        );
+        SearchPageObject SearchPageObject = new SearchPageObject(driver);
+        SearchPageObject.initSkipButtonClick();
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine("Java");
+        SearchPageObject.waitForSearchResult("Java (programming language)");
+        this.backgroundApp(2);
+        SearchPageObject.waitForSearchResult("Java (programming language)");
     }
 
     // HW - Ex5: Тест: Сохранение двух статей либо Онбординг
