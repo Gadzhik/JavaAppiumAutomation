@@ -8,7 +8,7 @@ public class NavigationUI extends MainPageObject
 {
 
     private static final String
-            MY_LISTS_LINK = "org.wikipedia:id/snackbar_action";
+            MY_LISTS_LINK = "id:org.wikipedia:id/snackbar_action";
 
     public NavigationUI(AppiumDriver driver)
     {
@@ -19,8 +19,7 @@ public class NavigationUI extends MainPageObject
     public void clickMyLists()
     {
         // нажимаем кнопку View List
-        this.waitForElementAndClick(
-                By.id(MY_LISTS_LINK),
+        this.waitForElementAndClick(MY_LISTS_LINK,
                 "Cannot click to 'View List' button",
                 5
         );

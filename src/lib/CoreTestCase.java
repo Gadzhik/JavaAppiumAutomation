@@ -68,7 +68,6 @@ public class CoreTestCase extends TestCase {
     {
         // записываем в переменную значение добавленой ENV VAR (PLATFORM=android)
         String platform = System.getenv("PLATFORM");
-
         DesiredCapabilities capabilities = new DesiredCapabilities();
 
         if (platform.equals(PLATFORM_ANDROID)) {
@@ -80,7 +79,6 @@ public class CoreTestCase extends TestCase {
             capabilities.setCapability("appium:appActivity", ".main.MainActivity");
             capabilities.setCapability("appium:app", "C:\\Users\\gadzhi\\IdeaProjects\\JavaAppiumAutomation\\apks\\org.wikipedia.apk");
         } else if (platform.equals(PLATFORM_IOS)) {
-
         capabilities.setCapability("appium:platformName", "iOS");
         capabilities.setCapability("appium:deviceName", "iPhone SE");
         capabilities.setCapability("appium:platformVersion", "11.3");
