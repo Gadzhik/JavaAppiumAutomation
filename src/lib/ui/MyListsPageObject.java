@@ -1,11 +1,12 @@
 package lib.ui;
 import io.appium.java_client.AppiumDriver;
+import lib.Platform;
 
-public class MyListsPageObject extends MainPageObject{
+abstract public class MyListsPageObject extends MainPageObject{
 
-    public static final String
-            FOLDER_BY_NAME_TPL = "xpath://android.widget.TextView[@resource-id='org.wikipedia:id/item_title'][@text='{FOLDER_NAME}']",
-            ARTICLE_BY_TITLE_TPL = "xpath://android.widget.TextView[@resource-id='org.wikipedia:id/page_list_item_title'][@text='{TITLE}']";
+    protected static String
+            FOLDER_BY_NAME_TPL,
+            ARTICLE_BY_TITLE_TPL;
 
     public MyListsPageObject(AppiumDriver driver)
     {
@@ -53,6 +54,11 @@ public class MyListsPageObject extends MainPageObject{
         this.swipeElementToLeft(article_xpath,
                 "Cannot find saved article"
         );
+
+        if (Platform.getInstance().isIOS()) {
+            this.clickElementToTheRightUpperCorner(article_xpath, "Cannot find saved article!!!");
+        }
+
         this.waitForArticleToDisappearByTitle(article_title);
     }
 }

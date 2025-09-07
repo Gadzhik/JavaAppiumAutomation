@@ -12,7 +12,8 @@ abstract public class ArticlePageObject extends MainPageObject
         OPTIONS_SAVE_BUTTON,
         OPTIONS_ADD_TO_MY_LIST_BUTTON,
         OPTIONS_NAME_OF_THE_LIST,
-        MY_LIST_OK_BUTTON;
+        MY_LIST_OK_BUTTON,
+        CLOSE_ARTICLE_BUTTON;
 
     public ArticlePageObject(AppiumDriver driver)
     {
@@ -83,6 +84,24 @@ abstract public class ArticlePageObject extends MainPageObject
         // click to OK button
         this.waitForElementAndClick(MY_LIST_OK_BUTTON,
                 "Cannot find 'OK' button",
+                5
+        );
+    }
+
+    public void addArticlesToMySaved()
+    {
+        this.waitForElementAndClick(
+                OPTIONS_ADD_TO_MY_LIST_BUTTON,
+                "Cannot find options to add article to reading list",
+                5
+        );
+    }
+
+    public void closeArticle()
+    {
+        this.waitForElementAndClick(
+                CLOSE_ARTICLE_BUTTON,
+                "Cannot close article, cannot find X link,",
                 5
         );
     }

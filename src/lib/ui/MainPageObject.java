@@ -1,9 +1,6 @@
 package lib.ui;
-
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.TouchAction;
-import io.appium.java_client.touch.WaitOptions;
-import io.appium.java_client.touch.offset.PointOption;
 import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
@@ -18,6 +15,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
+import lib.Platform;
 
 public class MainPageObject
 {
@@ -240,6 +238,24 @@ public class MainPageObject
 //        action.perform();
 //    }
 
+    public void clickElementToTheRightUpperCorner(String locator, String error_message)
+    {
+        // TODO поправить для IOS
+        WebElement element = this.waitForElementPresent(locator + "/..", error_message);
+        int right_x = element.getLocation().getX();
+        int upper_y = element.getLocation().getY();
+        int lower_y = upper_y + element.getSize().getHeight();
+        int middle_y = (upper_y + lower_y) / 2;
+        int width = element.getSize().getWidth();
+
+        int point_to_click_x = (right_x + width) - 3;
+        int point_to_click_y = middle_y;
+
+        TouchAction action = new TouchAction(driver);
+        System.out.println("ERRRRRROOOOOORRRRR --->>> clickElementToTheRightUpperCorner");
+//        action.tap(point_to_click_x, point_to_click_y).perform();
+    }
+
     public void swipeElementToLeft(String locator, String error_message) {
 
         // Находим элемент на экране, ожидая его появления в течение 10 секунд.
@@ -271,11 +287,19 @@ public class MainPageObject
         int end_y = middle_y;
 
         // Выполняем свайп с начальной точки до конечной с заданной продолжительностью.
-        this.swipe(
-                new Point(start_x, start_y),
-                new Point(end_x, end_y),
-                Duration.ofMillis(550)  // Устанавливаем продолжительность свайпа 550 миллисекунд.
-        );
+        if (Platform.getInstance().isAndroid()) {
+            this.swipe(
+                    new Point(start_x, start_y),
+                    new Point(end_x, end_y),
+                    Duration.ofMillis(550)  // Устанавливаем продолжительность свайпа 550 миллисекунд.
+            );
+        } else {
+            int offset_x = (-1 * element.getSize().getWidth());
+//            swipe (new Point(offset_x, 0);
+            // TODO -> Доделать for IOS
+            System.out.println("Доделать");
+        }
+
     }
 
     public void swipe(Point start, Point end, Duration duration) {
