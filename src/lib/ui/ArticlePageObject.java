@@ -1,17 +1,18 @@
 package lib.ui;
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.WebElement;
+import lib.Platform;
 
 // для работы со статьями
-public class ArticlePageObject extends MainPageObject
+abstract public class ArticlePageObject extends MainPageObject
 {
-    private static final String
-        TITLE = "xpath://android.view.View[@content-desc='Object-oriented programming language']",
-        FOOTER_ELEMENT = "xpath://*[@content-desc='View article in browser']",
-        OPTIONS_SAVE_BUTTON = "xpath://android.widget.TextView[@content-desc='Save']",
-        OPTIONS_ADD_TO_MY_LIST_BUTTON = "id:org.wikipedia:id/snackbar_action",
-        OPTIONS_NAME_OF_THE_LIST = "id:org.wikipedia:id/text_input",
-        MY_LIST_OK_BUTTON = "id:android:id/button1";
+    protected static String
+        TITLE,
+        FOOTER_ELEMENT,
+        OPTIONS_SAVE_BUTTON,
+        OPTIONS_ADD_TO_MY_LIST_BUTTON,
+        OPTIONS_NAME_OF_THE_LIST,
+        MY_LIST_OK_BUTTON;
 
     public ArticlePageObject(AppiumDriver driver)
     {
@@ -28,17 +29,28 @@ public class ArticlePageObject extends MainPageObject
     public String getArticleTitle()
     {
         WebElement title_element = waitForTitleElement();
-        return title_element.getAttribute("contentDescription");
+        if (Platform.getInstance().isAndroid()) {
+            return title_element.getAttribute("contentDescription");
+        } else {
+            return title_element.getAttribute("name");
+        }
+
     }
 
     // добавляем метод для свайпа
     // если оставить TITLE = "//android.view.View[@content-desc='']", то свайп работает для теста testSwipeArticle
     public void swipeToFooter()
     {
-        this.swipeUpToFindElement(FOOTER_ELEMENT,
-                "Cannot find the end of article",
-                20
-        );
+        if (Platform.getInstance().isAndroid()) {
+            this.swipeUpToFindElement(FOOTER_ELEMENT,
+                    "Cannot find the end of article",
+                    40
+            );
+        } else {
+            this.swipeUpTillElementAppear(FOOTER_ELEMENT,
+            "Cannot find the end of article",
+            40);
+        }
     }
 
     // метод для добавления статьи в список
